@@ -1,6 +1,6 @@
-import React from 'react'
+import React,{Fragment}  from 'react'
 import {Link, withRouter} from 'react-router-dom'
-
+import {signout, isAuthenticated} from '../auth'
 /**
  * 
  * @param {*} history : actual path of the current address
@@ -20,12 +20,39 @@ const Menu = ({history}) => (
             <li className="nav-item">
                 <Link className="nav-link" style={isActive(history,'/')} to="/">Home</Link>
             </li>
+            
+            {!isAuthenticated() && (
+                // using <div> will mess up styling in menu
+                <Fragment>
+                    <li className="nav-item">
+                    <Link className="nav-link" style={isActive(history,'/signin')} to="/signin">Signin</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link className="nav-link" style={isActive(history,'/signup')} to="/signup">Signup</Link>
+                    </li>
+                </Fragment>
+            )}
+
             <li className="nav-item">
-                <Link className="nav-link" style={isActive(history,'/signin')} to="/signin">Signin</Link>
+                <Link className="nav-link" style={isActive(history,'/user/dashboard')} to="/user/dashboard">Dashboard</Link>
             </li>
-            <li className="nav-item">
-                <Link className="nav-link" style={isActive(history,'/signup')} to="/signup">Signup</Link>
-            </li>
+
+            {isAuthenticated() && (
+                <li className="nav-item">
+                    <span 
+                        className="nav-link"
+                        style={{cursor: 'pointer', color:'#ffffff'}} 
+                        to="/signout"
+                        onClick={() => 
+                            signout(() => {
+                                history.push('/');
+                            })
+                        }
+                    >
+                        Signout
+                    </span>
+                </li>
+            )}
         </ul>
     </div>
 )
