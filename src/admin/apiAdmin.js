@@ -21,13 +21,14 @@ export const createCategory = (userId, token, category) => {
 
 // user = (name, email, password)
 export const createProduct = (userId, token, product) => {
+    console.log("it's product  : ", product)
     return fetch(`${API}/product/create/${userId}`, {
         method: "POST",
         headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(product)
+        body: product
     })
     .then(response => {
         return response.json()
@@ -37,5 +38,13 @@ export const createProduct = (userId, token, product) => {
     })
 }
 
-
+export const getCategories = () => {
+    return fetch(`${API}/categories/`, {
+        method: "GET"
+    })
+    .then(response => {
+        return response.json()
+    })
+    .catch(err => console.log(err))
+}
 
