@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import Layout from './Layout';
 import Card from './Card';
-import {getCategories} from "./apiCore";
+import { getCategories, getFilteredProducts } from "./apiCore";
 import Checkbox from "./Checkbox";
 import { prices } from "./fixedPrices"
 import RadioBox from "./RadioBox"
@@ -12,6 +12,10 @@ const Shop= () => {
     })
     const [categoreis, setCategories] = useState([])
     const [error, setError] = useState(false)
+    const [limit, setLimit] = useState(6)
+    const [skip, setSkip] = useState(0)
+    const [size, setSize] = useState(0)
+    const [filteredResults, setFilteredResults] = useState([])
 
     const init = () => {
         getCategories()
@@ -24,8 +28,45 @@ const Shop= () => {
         })
     }
 
+    const loadFilteredResults = (newFilters) => {
+        // console.log(newFilters)
+        getFilteredProducts(skip, limit, newFilters)
+        .then(data => {
+            if (data.error) {
+                setError(data.error)
+            } else {
+                setFilteredResults(data.data)
+                setSize(data.size)
+                setSkip(0)
+            }
+        })
+    }
+
+    const loadMore = () => {
+        let toSkip = skip + limit
+        getFilteredProducts(toSkip, limit, myFilters.filters)
+        .then(data => {
+            if (data.error) {
+                setError(data.error)
+            } else {
+                setFilteredResults([...filteredResults, ...data.data])
+                setSize(data.size)
+                setSkip(toSkip)
+            }
+        })
+    }
+
+    const loadMoreButton = () => {
+        return (
+            size > 0 && size >= limit && (
+                <button onClick={loadMore} className="btn btn-warning mb-5">Load more</button>
+            )
+        )
+    }
+
     useEffect(() => {
         init()
+        loadFilteredResults(skip, limit, myFilters.filters)
     }, [])
 
     const handleFilters = (filters, filterBy) => {
@@ -37,7 +78,7 @@ const Shop= () => {
             let priceValues = handlePrice(filters)
             newFilters.filters[filterBy] = priceValues
         }
-
+        loadFilteredResults(myFilters.filters)
         setMyFilters(newFilters)
     }
 
@@ -70,8 +111,17 @@ const Shop= () => {
                             <RadioBox prices={prices} handleFilters={filters => handleFilters(filters, "price")} />
                         </div>
                 </div>
-                <div className="col-v8">
-                    {JSON.stringify(myFilters)}
+                <div className="col-8">
+                    <h2 className="mb-4">Products</h2>
+                    <div className="row">
+                        {filteredResults.map((product, i) => (
+                            <Card key={i} product={product} />
+                        ))}
+
+                    </div>
+                    <hr />
+                    {loadMoreButton()}
+
                 </div>
             </div>
 

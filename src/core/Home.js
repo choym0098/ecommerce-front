@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import Layout from './Layout';
 import {getProducts} from './apiCore'
 import Card from './Card'
-
+import Search from './Search'
 
 const Home = () => {
     const [productsBySell, setProductsBySell] = useState([])
@@ -45,6 +45,7 @@ const Home = () => {
     return (
         <Layout title="Home Page" description="Sherpa Dashboard" className="container-fluid">
             {showError()}
+            <Search />
             <h2 className="mb-4">Best Sellers</h2>
             <div className="row">
                 {productsBySell.map((product, index) => {
