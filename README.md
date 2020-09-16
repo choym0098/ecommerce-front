@@ -1,5 +1,5 @@
 # ecommerce-front
-frontend codes for ecommerce applicatois, written in React.js
+frontend codes for ecommerce application, written in React.js
 
 ## Set up
 ```
